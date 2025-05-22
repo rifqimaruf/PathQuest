@@ -1,0 +1,73 @@
+.chess-container{
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.player{
+    font-weight: bold;
+    margin: 10px;
+}
+
+.top-player{
+    text-align: left;
+    margin-right: 10px;
+}
+
+.bottom-player{
+    text-align: left;
+    margin-left: 10px;
+}
+
+.chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+    border: 2px solid #333;
+}
+
+.square {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0;
+}
+
+.light{
+    background-color: #f0d9b5;
+}
+
+.dark{
+    background-color: #b58863;
+}
+
+.piece{
+    width: 40px;
+    height: 40px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.br { background-image: url('./assets/bR.png'); }
+.bn { background-image: url('./assets/bN.png'); }
+.bb { background-image: url('./assets/bB.png'); }
+.bq { background-image: url('./assets/bQ.png'); }
+.bk { background-image: url('./assets/bK.png'); }
+.bp { background-image: url('./assets/bP.png'); }
+.wr { background-image: url('./assets/wR.png'); }
+.wn { background-image: url('./assets/wN.png'); }
+.wb { background-image: url('./assets/wB.png'); }
+.wq { background-image: url('./assets/wQ.png'); }
+.wk { background-image: url('./assets/wK.png'); }
+.wp { background-image: url('./assets/wP.png'); }
+
+.status{
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 16px;
+}
