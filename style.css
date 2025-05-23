@@ -1,73 +1,249 @@
-.chess-container{
-    width: fit-content;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #2d2d2d;
+    color: #fff;
+}
+
+.game-container {
+    display: flex;
+    max-width: 1200px;
     margin: 0 auto;
-    text-align: center;
-    font-family: Arial, sans-serif;
+    gap: 20px;
 }
 
-.player{
+.board-section {
+    flex: 1;
+}
+
+.players-info {
+    margin-bottom: 15px;
+}
+
+.player {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px;
+    background-color: #3a3a3a;
+    border-radius: 5px;
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #666;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.player-name {
     font-weight: bold;
-    margin: 10px;
-}
-
-.top-player{
-    text-align: left;
     margin-right: 10px;
 }
 
-.bottom-player{
-    text-align: left;
-    margin-left: 10px;
+.player-rating {
+    color: #888;
+    font-size: 14px;
 }
 
-.chessboard {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    width: 400px;
-    height: 400px;
-    margin: 20px auto;
-    border: 2px solid #333;
+#myBoard {
+    margin: 0 auto;
 }
 
-.square {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0;
+.sidebar {
+    width: 350px;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+    height: fit-content;
 }
 
-.light{
-    background-color: #f0d9b5;
+.sidebar-section {
+    margin-bottom: 25px;
 }
 
-.dark{
-    background-color: #b58863;
-}
-
-.piece{
-    width: 40px;
-    height: 40px;
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-.br { background-image: url('./assets/bR.png'); }
-.bn { background-image: url('./assets/bN.png'); }
-.bb { background-image: url('./assets/bB.png'); }
-.bq { background-image: url('./assets/bQ.png'); }
-.bk { background-image: url('./assets/bK.png'); }
-.bp { background-image: url('./assets/bP.png'); }
-.wr { background-image: url('./assets/wR.png'); }
-.wn { background-image: url('./assets/wN.png'); }
-.wb { background-image: url('./assets/wB.png'); }
-.wq { background-image: url('./assets/wQ.png'); }
-.wk { background-image: url('./assets/wK.png'); }
-.wp { background-image: url('./assets/wP.png'); }
-
-.status{
-    margin-top: 10px;
-    font-weight: bold;
+.sidebar-title {
     font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.move-history {
+    background-color: #2a2a2a;
+    border-radius: 5px;
+    padding: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.move-pair {
+    display: flex;
+    margin-bottom: 5px;
+    font-family: 'Courier New', monospace;
+}
+
+.move-number {
+    width: 30px;
+    color: #888;
+    font-size: 14px;
+}
+
+.move {
+    flex: 1;
+    padding: 3px 8px;
+    margin: 0 2px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.move:hover {
+    background-color: #444;
+}
+
+.move.selected {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-back {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.btn-back:hover {
+    background-color: #357abd;
+}
+
+.btn-resign {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-resign:hover {
+    background-color: #c0392b;
+}
+
+.btn-share {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-share:hover {
+    background-color: #219a52;
+}
+
+.btn-new-game {
+    background-color: #f39c12;
+    color: white;
+}
+
+.btn-new-game:hover {
+    background-color: #d68910;
+}
+
+.status-section {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.game-status {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.notation-display {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    max-height: 150px;
+    overflow-y: auto;
+    word-break: break-all;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-confirm {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.share-modal textarea {
+    width: 100%;
+    height: 100px;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #1a1a1a;
+    color: white;
+    font-family: 'Courier New', monospace;
+    resize: vertical;
 }
