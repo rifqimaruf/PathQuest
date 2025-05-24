@@ -1,0 +1,139 @@
+body {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #374151; /* bg-gray-700 */
+    color: #f3f4f6; /* text-gray-100 */
+    margin: 0;
+    padding: 1rem;
+}
+.board-container {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+    width: clamp(300px, 90vw, 600px); /* Responsive width */
+    height: clamp(300px, 90vw, 600px); /* Responsive height */
+    border: 4px solid #5a3825; /* A darker brown for border */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    position: relative; 
+}
+
+.square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.5rem, 5vw, 3rem); 
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    box-sizing: border-box; 
+}
+
+.light-square { background-color: #D2B48C; }
+
+.dark-square { background-color: #8B4513; }
+
+.selected-piece-square { 
+    background-color: #60A5FA !important; 
+    outline: 3px solid #2563EB; 
+}
+
+#highlight-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1; 
+}
+
+.highlight-segment {
+    position: absolute; border-radius: 0.125rem; 
+}
+
+.highlight-move { background-color: rgba(74, 222, 128, 0.55); }
+
+.highlight-capture { background-color: rgba(248, 113, 113, 0.55); }
+
+.piece-white { color: #FFFFFF; }
+.piece-black { color: #000000; }
+.dark-square .piece-white { color: #FFFFFF; }
+.dark-square .piece-black { color: #000000; }
+.light-square .piece-black { color: #000000; }
+.light-square .piece-white { color: #FFFFFF; }
+
+#game-controls {
+    display: flex;
+    gap: 0.5rem; 
+    margin-top: 1rem; 
+    align-items: center;
+}
+
+.game-button {
+    padding: 0.5rem 1rem; 
+    color: white;
+    border: none;
+    border-radius: 0.375rem; 
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#reset-button { background-color: #ef4444; /* bg-red-500 */ }
+#reset-button:hover { background-color: #dc2626; /* bg-red-600 */ }
+
+
+#game-info {
+    margin-top: 1.5rem; font-size: 1.25rem; text-align: center; color: #f3f4f6;
+}
+
+.modal {
+    display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+    overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;
+}
+
+.modal-content {
+    background-color: #4b5563; margin: auto; padding: 2rem; border: 1px solid #6b7280;
+    width: 80%; max-width: 500px; border-radius: 0.5rem; text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); color: #f3f4f6;
+}
+
+.modal-title {
+    font-size: 1.5rem; 
+    font-weight: bold;
+    margin-bottom: 1rem; 
+}
+
+#modal-buttons-container { /* Container for all modal buttons */
+    margin-top: 1.5rem; /* space above buttons */
+    display: flex;
+    justify-content: center; /* Center buttons */
+    gap: 0.75rem; /* space-x-3 */
+}
+
+.modal-button { /* Common style for modal buttons */
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500; /* medium */
+}
+
+#modal-ok-button { /* For info popups */
+    background-color: #3b82f6; /* bg-blue-500 */
+    color: white;
+}
+
+#modal-ok-button:hover { background-color: #2563eb; /* bg-blue-600 */ }
+
+#modal-confirm-button { /* For confirmation dialogs */
+    background-color: #22c55e; /* bg-green-500 */
+    color: white;
+}
+
+#modal-confirm-button:hover { background-color: #16a34a; /* bg-green-600 */ }
+
+#modal-cancel-button { /* For confirmation dialogs */
+    background-color: #6b7280; /* bg-gray-500 */
+    color: white;
+}
+
+#modal-cancel-button:hover { background-color: #4b5563; /* bg-gray-600 */ }

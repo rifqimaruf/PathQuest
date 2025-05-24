@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PathQuest Chess Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1 class="text-3xl font-bold mb-6 text-center">PathQuest Chess Game</h1>
+    <div id="game-info" class="mb-4 text-xl">White's Turn</div>
+    <div id="board-container" class="board-container">
+        <div id="highlight-overlay"></div>
+    </div>
+    <div id="game-controls">
+        <button id="reset-button" class="game-button">Reset Game</button>
+    </div>
+
+    <div id="message-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title" class="modal-title">Game Message</h2>
+            <p id="modal-text" class="text-lg"></p>
+            <div id="modal-buttons-container">
+                <button id="modal-ok-button" class="modal-button">OK</button>
+                <button id="modal-confirm-button" class="modal-button">Confirm</button>
+                <button id="modal-cancel-button" class="modal-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
