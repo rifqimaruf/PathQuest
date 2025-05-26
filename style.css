@@ -1,249 +1,110 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #2d2d2d;
-    color: #fff;
-}
-
-.game-container {
+    font-family: Arial, sans-serif;
     display: flex;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 20px;
-}
-
-.board-section {
-    flex: 1;
-}
-
-.players-info {
-    margin-bottom: 15px;
-}
-
-.player {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 8px;
-    background-color: #3a3a3a;
-    border-radius: 5px;
-}
-
-.player-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #666;
-    margin-right: 10px;
-    display: flex;
-    align-items: center;
+    flex-direction: column; 
+    align-items: center; 
     justify-content: center;
-    font-size: 18px;
+    height: 100vh;
+    width: 100vw; 
+    background-color: #333;
+    margin: 0;
+    overflow: hidden; 
+    color: #fff; 
 }
 
-.player-name {
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-.player-rating {
-    color: #888;
-    font-size: 14px;
-}
-
-#myBoard {
-    margin: 0 auto;
-}
-
-.sidebar {
-    width: 350px;
-    background-color: #1a1a1a;
-    border-radius: 8px;
-    padding: 20px;
-    height: fit-content;
-}
-
-.sidebar-section {
-    margin-bottom: 25px;
-}
-
-.sidebar-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #fff;
-}
-
-.move-history {
-    background-color: #2a2a2a;
-    border-radius: 5px;
-    padding: 15px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.move-pair {
-    display: flex;
-    margin-bottom: 5px;
-    font-family: 'Courier New', monospace;
-}
-
-.move-number {
-    width: 30px;
-    color: #888;
-    font-size: 14px;
-}
-
-.move {
-    flex: 1;
-    padding: 3px 8px;
-    margin: 0 2px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.move:hover {
-    background-color: #444;
-}
-
-.move.selected {
-    background-color: #4a90e2;
-    color: white;
-}
-
-.game-controls {
+.container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
-
-.control-btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.btn-back {
-    background-color: #4a90e2;
-    color: white;
-}
-
-.btn-back:hover {
-    background-color: #357abd;
-}
-
-.btn-resign {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.btn-resign:hover {
-    background-color: #c0392b;
-}
-
-.btn-share {
-    background-color: #27ae60;
-    color: white;
-}
-
-.btn-share:hover {
-    background-color: #219a52;
-}
-
-.btn-new-game {
-    background-color: #f39c12;
-    color: white;
-}
-
-.btn-new-game:hover {
-    background-color: #d68910;
-}
-
-.status-section {
-    background-color: #2a2a2a;
-    padding: 15px;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.game-status {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.notation-display {
-    background-color: #2a2a2a;
-    padding: 15px;
-    border-radius: 5px;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    max-height: 150px;
-    overflow-y: auto;
-    word-break: break-all;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
+    align-items: center;
+    justify-content: space-around; 
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    padding: 20px; 
+    box-sizing: border-box; 
 }
 
-.modal-content {
-    background-color: #2a2a2a;
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 500px;
+h1 {
+    font-size: clamp(1.8em, 5vh, 3em); 
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+#turnIndicator {
+    font-size: clamp(1.2em, 3.5vh, 1.8em);
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 5px;
     text-align: center;
 }
 
-.modal-buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
+.white-turn {
+    color: #000;
+    background-color: #fff;
+    border: 1px solid #ccc;
 }
 
-.modal-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
+.black-turn {
+    color: #fff;
+    background-color: #555; 
+    border: 1px solid #777;
 }
 
-.btn-confirm {
-    background-color: #e74c3c;
-    color: white;
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(40px, calc(min(8vh, 8vw))));
+    grid-template-rows: repeat(8, minmax(40px, calc(min(8vh, 8vw))));
+    border: 3px solid #666;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5); 
 }
 
-.btn-cancel {
-    background-color: #6c757d;
-    color: white;
-}
-
-.share-modal textarea {
+.cell {
     width: 100%;
-    height: 100px;
-    margin: 15px 0;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #555;
-    background-color: #1a1a1a;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(min(6vh, 6vw));
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.cell.white {
+    background-color: #f0d9b5;
+}
+
+.cell.black {
+    background-color: #b58863;
+}
+
+.cell.selected {
+    background-color: #6495ED !important;
+    border: 2px solid #0000FF;
+    outline: 2px solid #0000FF; 
+    outline-offset: -2px;
+}
+
+.piece {
+    user-select: none;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3); 
+}
+
+.black-piece-text {
+    color: #111111; 
+}
+
+#resetButton {
+    padding: clamp(10px, 2.5vh, 18px) clamp(20px, 5vw, 35px);
+    font-size: clamp(1em, 3vh, 1.5em);
+    cursor: pointer;
+    background-color: #4CAF50;
     color: white;
-    font-family: 'Courier New', monospace;
-    resize: vertical;
+    border: none;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+#resetButton:hover {
+    background-color: #45a049;
 }
