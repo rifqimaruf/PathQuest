@@ -7,7 +7,9 @@ const modalText = document.getElementById('modal-text');
 const modalOkButton = document.getElementById('modal-ok-button');
 const modalConfirmButton = document.getElementById('modal-confirm-button');
 const modalCancelButton = document.getElementById('modal-cancel-button');
-let highlightOverlay; 
+import { ChessEngine } from './chess-engine.js';
+let highlightOverlay;
+let lastMove = null;
 
 const UNICODE_PIECES = {
     white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
@@ -16,23 +18,23 @@ const UNICODE_PIECES = {
 
 let board = [];
 let currentPlayer = 'white';
-let selectedPiece = null; 
-let currentValidMoves = []; 
-let currentConfirmAction = null; 
+let selectedPiece = null;
+let currentValidMoves = [];
+let currentConfirmAction = null;
+let chessEngine = new ChessEngine();
 
 // Game Setup and Board Rendering
-function initialBoardSetup() { 
+function initialBoardSetup() {
     return [
         [{ type: 'rook', color: 'black' }, { type: 'knight', color: 'black' }, { type: 'bishop', color: 'black' }, { type: 'queen', color: 'black' }, { type: 'king', color: 'black' }, { type: 'bishop', color: 'black' }, { type: 'knight', color: 'black' }, { type: 'rook', color: 'black' }],
         Array(8).fill(null).map(() => ({ type: 'pawn', color: 'black' })),
         Array(8).fill(null), Array(8).fill(null), Array(8).fill(null), Array(8).fill(null),
         Array(8).fill(null).map(() => ({ type: 'pawn', color: 'white' })),
         [{ type: 'rook', color: 'white' }, { type: 'knight', color: 'white' }, { type: 'bishop', color: 'white' }, { type: 'queen', color: 'white' }, { type: 'king', color: 'white' }, { type: 'bishop', color: 'white' }, { type: 'knight', color: 'white' }, { type: 'rook', color: 'white' }]
-    ]
+    ];
 }
 
-function renderBoard() { 
-    
+function renderBoard() {
     const existingSquares = boardContainer.querySelectorAll('.square');
     existingSquares.forEach(sq => sq.remove());
 
@@ -50,38 +52,38 @@ function renderBoard() {
                 square.classList.add(piece.color === 'white' ? 'piece-white' : 'piece-black');
             }
             square.addEventListener('click', () => handleSquareClick(r, c));
-            boardContainer.insertBefore(square, highlightOverlay); 
+            boardContainer.insertBefore(square, highlightOverlay);
         }
     }
 }
 
 // Highlighting Logic
-function clearHighlights() { 
+function clearHighlights() {
     if (highlightOverlay) highlightOverlay.innerHTML = '';
     document.querySelectorAll('.square.selected-piece-square').forEach(sq => sq.classList.remove('selected-piece-square'));
-    currentValidMoves = []; 
+    currentValidMoves = [];
 }
 
-function highlightPossibleMoves(moves) { 
-    clearHighlights(); 
-    currentValidMoves = moves; 
+function highlightPossibleMoves(moves) {
+    clearHighlights();
+    currentValidMoves = moves;
     if (!highlightOverlay || moves.length === 0) return;
     const firstSquareElement = boardContainer.querySelector('.square');
-    if (!firstSquareElement) return; 
-    const squareSize = firstSquareElement.offsetWidth; 
+    if (!firstSquareElement) return;
+    const squareSize = firstSquareElement.offsetWidth;
 
     if (selectedPiece) {
-            const selectedSquareEl = document.querySelector(`.square[data-r="${selectedPiece.r}"][data-c="${selectedPiece.c}"]`);
-            if (selectedSquareEl) selectedSquareEl.classList.add('selected-piece-square');
+        const selectedSquareEl = document.querySelector(`.square[data-r="${selectedPiece.r}"][data-c="${selectedPiece.c}"]`);
+        if (selectedSquareEl) selectedSquareEl.classList.add('selected-piece-square');
     }
-    
-    for (const move of moves) { 
+
+    for (const move of moves) {
         const isCapture = board[move.r][move.c] !== null && board[move.r][move.c].color !== currentPlayer;
         createHighlightDiv(move.r, move.c, 1, 1, isCapture, squareSize);
     }
 }
 
-function createHighlightDiv(r, c, width, height, isCapture, squareSize) { 
+function createHighlightDiv(r, c, width, height, isCapture, squareSize) {
     const div = document.createElement('div');
     div.className = 'highlight-segment ' + (isCapture ? 'highlight-capture' : 'highlight-move');
     div.style.top = r * squareSize + 'px';
@@ -93,16 +95,21 @@ function createHighlightDiv(r, c, width, height, isCapture, squareSize) {
 
 // Game Interaction & Rules
 function handleSquareClick(r, c) {
-        const clickedPiece = board[r][c];
+    if (currentPlayer !== 'white') return; // Only allow clicks for White's turn
+    const clickedPiece = board[r][c];
 
     if (selectedPiece) {
         const isMoveValid = currentValidMoves.some(move => move.r === r && move.c === c);
         if (isMoveValid) {
-            movePiece(selectedPiece.r, selectedPiece.c, r, c);
+            movePiece(selectedPiece.r, selectedPiece.c, r, c, 'white');
             selectedPiece = null;
-            clearHighlights(); 
+            clearHighlights();
             switchPlayer();
             checkGameEndConditions();
+            if (currentPlayer === 'black') {
+                gameInfo.textContent = "Black is thinking...";
+                setTimeout(makeBlackMove, 500); // Delay for better UX
+            }
         } else if (clickedPiece && clickedPiece.color === currentPlayer) {
             selectedPiece = { piece: clickedPiece, r, c };
             const moves = getValidMoves(clickedPiece, r, c, board);
@@ -120,15 +127,34 @@ function handleSquareClick(r, c) {
     }
 }
 
-function movePiece(fromR, fromC, toR, toC) {
+function movePiece(fromR, fromC, toR, toC, player) {
     const pieceToMove = board[fromR][fromC];
+    lastMove = { fromR, fromC, toR, toC, piece: pieceToMove };
+    window.lastMove = lastMove; // Sync with global
     if (pieceToMove.type === 'pawn' && ((pieceToMove.color === 'white' && toR === 0) || (pieceToMove.color === 'black' && toR === 7))) {
         board[toR][toC] = { type: 'queen', color: pieceToMove.color };
+    } else if (pieceToMove.type === 'pawn' && lastMove.enPassant) {
+        board[toR][toC] = pieceToMove;
+        board[fromR][toC] = null; // Remove captured pawn
     } else {
         board[toR][toC] = pieceToMove;
     }
     board[fromR][fromC] = null;
-    renderBoard(); 
+    renderBoard();
+    const move = { fromR, fromC, toR, toC, piece: pieceToMove, enPassant: lastMove.enPassant || false };
+    const notation = chessEngine.getMoveNotation(move, board);
+    gameInfo.textContent = `${player.charAt(0).toUpperCase() + player.slice(1)} moved ${notation}`;
+}
+
+function makeBlackMove() {
+    const bestMove = chessEngine.getBestMove(board, 'black');
+    if (bestMove) {
+        movePiece(bestMove.fromR, bestMove.fromC, bestMove.toR, bestMove.toC, 'black');
+        switchPlayer();
+        checkGameEndConditions();
+    } else {
+        showInfoModal("Game Over", "No legal moves for Black!");
+    }
 }
 
 function switchPlayer() {
@@ -151,19 +177,20 @@ function isKingInCheck(playerColor, boardState) {
         for (let c_idx = 0; c_idx < 8; c_idx++) {
             const p = boardState[r_idx][c_idx];
             if (p && p.type === 'king' && p.color === playerColor) {
-                kingPos = { r: r_idx, c: c_idx }; break;
+                kingPos = { r: r_idx, c: c_idx };
+                break;
             }
         }
         if (kingPos) break;
     }
-    if (!kingPos) return false; 
+    if (!kingPos) return false;
 
     const opponentColor = playerColor === 'white' ? 'black' : 'white';
     for (let r_idx = 0; r_idx < 8; r_idx++) {
         for (let c_idx = 0; c_idx < 8; c_idx++) {
             const piece = boardState[r_idx][c_idx];
             if (piece && piece.color === opponentColor) {
-                const moves = getRawValidMoves(piece, r_idx, c_idx, boardState); 
+                const moves = getRawValidMoves(piece, r_idx, c_idx, boardState);
                 if (moves.some(move => move.r === kingPos.r && move.c === kingPos.c)) return true;
             }
         }
@@ -171,17 +198,29 @@ function isKingInCheck(playerColor, boardState) {
     return false;
 }
 
-isCheck = (playerColor) => isKingInCheck(playerColor, board);
+function isCheck(playerColor) {
+    return isKingInCheck(playerColor, board);
+}
 
 function isCheckmate(playerColor) {
     if (!isKingInCheck(playerColor, board)) return false;
-    for (let r=0;r<8;r++) for (let c=0;c<8;c++) { const p=board[r][c]; if(p&&p.color===playerColor&&getValidMoves(p,r,c,board).length>0)return false; }
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const p = board[r][c];
+            if (p && p.color === playerColor && getValidMoves(p, r, c, board).length > 0) return false;
+        }
+    }
     return true;
 }
 
 function isStalemate(playerColor) {
-        if (isKingInCheck(playerColor, board)) return false;
-    for (let r=0;r<8;r++) for (let c=0;c<8;c++) { const p=board[r][c]; if(p&&p.color===playerColor&&getValidMoves(p,r,c,board).length>0)return false; }
+    if (isKingInCheck(playerColor, board)) return false;
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const p = board[r][c];
+            if (p && p.color === playerColor && getValidMoves(p, r, c, board).length > 0) return false;
+        }
+    }
     return true;
 }
 
@@ -193,47 +232,25 @@ function checkGameEndConditions() {
             showInfoModal("Check!", `${currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)} is in Check!`);
         }
     } else if (isStalemate(currentPlayer)) {
-            showInfoModal("Stalemate!", "The game is a draw.");
+        showInfoModal("Stalemate!", "The game is a draw.");
     }
 }
 
 // DFS Move Generation
-/**
- * Recursively explores a path for a sliding piece using DFS.
- * @param {number} currentR - The current row to start exploring from.
- * @param {number} currentC - The current column to start exploring from.
- * @param {number} dr - The change in row for the direction of exploration.
- * @param {number} dc - The change in column for the direction of exploration.
- * @param {string} color - The color of the piece being moved.
- * @param {Array<Array<Object|null>>} currentBoard - The board state.
- * @param {Array<{r: number, c: number}>} pathMoves - An array to accumulate moves found along this path.
- */
-
 function dfsPathFinding(currentR, currentC, dr, dc, color, currentBoard, pathMoves) {
     const nextR = currentR + dr;
     const nextC = currentC + dc;
 
-    // Base Case 1: Off board
-    if (nextR < 0 || nextR >= 8 || nextC < 0 || nextC >= 8) {
-        return;
-    }
+    if (nextR < 0 || nextR >= 8 || nextC < 0 || nextC >= 8) return;
 
     const targetPiece = currentBoard[nextR][nextC];
 
-    // Base Case 2: Own piece - Path blocked
-    if (targetPiece && targetPiece.color === color) {
-        return;
-    }
+    if (targetPiece && targetPiece.color === color) return;
 
-    // Valid move found (empty or capture)
     pathMoves.push({ r: nextR, c: nextC });
 
-    // Base Case 3: Capture - Path blocked after capture
-    if (targetPiece && targetPiece.color !== color) {
-        return;
-    }
+    if (targetPiece && targetPiece.color !== color) return;
 
-    // Recursive Step: Continue in the same direction if not blocked
     dfsPathFinding(nextR, nextC, dr, dc, color, currentBoard, pathMoves);
 }
 
@@ -253,8 +270,10 @@ function getRawValidMoves(piece, r, c, currentBoard) {
             const d = color === 'white' ? -1 : 1;
             if (r + d >= 0 && r + d < 8 && currentBoard[r + d][c] === null) {
                 moves.push({ r: r + d, c: c });
-                if (((color === 'white' && r === 6) || (color === 'black' && r === 1)) && currentBoard[r + 2 * d][c] === null) {
-                    moves.push({ r: r + 2 * d, c: c });
+                if ((color === 'white' && r === 6) || (color === 'black' && r === 1)) {
+                    if (currentBoard[r + 2 * d][c] === null) {
+                        moves.push({ r: r + 2 * d, c: c });
+                    }
                 }
             }
             [-1, 1].forEach(dc => {
@@ -264,7 +283,6 @@ function getRawValidMoves(piece, r, c, currentBoard) {
                 }
             });
             break;
-        // Case for sliding pieces (rook, bishop, queen)
         case 'rook':
         case 'bishop':
         case 'queen':
@@ -286,7 +304,6 @@ function getRawValidMoves(piece, r, c, currentBoard) {
     return moves;
 }
 
-// Get *legal* moves by filtering raw moves based on check.
 function getValidMoves(piece, r, c, currentBoard) {
     const rawMoves = getRawValidMoves(piece, r, c, currentBoard);
     const validMovesFiltered = [];
@@ -300,12 +317,12 @@ function getValidMoves(piece, r, c, currentBoard) {
 }
 
 // Modal & Initialization
-function hideModal() { 
+function hideModal() {
     messageModal.style.display = "none";
-    currentConfirmAction = null; 
+    currentConfirmAction = null;
 }
 
-function showInfoModal(title, message) { 
+function showInfoModal(title, message) {
     modalTitle.textContent = title;
     modalText.textContent = message;
     modalOkButton.style.display = 'inline-block';
@@ -314,10 +331,10 @@ function showInfoModal(title, message) {
     messageModal.style.display = 'flex';
 }
 
-function showConfirmModal(title, message, onConfirm) { 
+function showConfirmModal(title, message, onConfirm) {
     modalTitle.textContent = title;
     modalText.textContent = message;
-    currentConfirmAction = onConfirm; 
+    currentConfirmAction = onConfirm;
     modalOkButton.style.display = 'none';
     modalConfirmButton.style.display = 'inline-block';
     modalCancelButton.style.display = 'inline-block';
@@ -337,14 +354,16 @@ resetButton.addEventListener('click', () => {
     showConfirmModal("Confirm Reset", "Are you sure you want to reset the game?", initGame);
 });
 
-function initGame() { 
-    highlightOverlay = document.getElementById('highlight-overlay'); 
+function initGame() {
+    highlightOverlay = document.getElementById('highlight-overlay');
     board = initialBoardSetup();
     currentPlayer = 'white';
     selectedPiece = null;
+    lastMove = null;
+    window.lastMove = null;
     gameInfo.textContent = "White's Turn";
-    renderBoard(); 
-    clearHighlights(); 
+    renderBoard();
+    clearHighlights();
 }
 
 initGame();
