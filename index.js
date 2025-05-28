@@ -1,168 +1,148 @@
-var game = new Chess();
-var myBoard;
-var gameHistory = [];
+const boardElement = document.getElementById('chessBoard');
+const turnIndicator = document.getElementById('turnIndicator');
+const resetButton = document.getElementById('resetButton');
 
-$(document).ready(function () {
-    var $status = $('#status');
-    var $fen = $('#fen');
-    var $pgn = $('#pgn');
+let board = [];
+let selectedPiece = null;
+let isWhiteTurn = true;
+let gameOver = false; 
 
-    function onDragStart(source, piece, position, orientation) {
-        if (game.game_over()) return false;
+const initialBoard = [
+    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+    ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
+];
 
-        if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-            return false;
-        }
-    }
+const pieceUnicode = {
+    'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
+    'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
+};
 
-    function onDrop(source, target) {
-        var move = game.move({
-            from: source,
-            to: target,
-            promotion: 'q'
-        });
+function createBoard() {
+    boardElement.innerHTML = '';
+    gameOver = false; 
+    board = JSON.parse(JSON.stringify(initialBoard)); 
+    for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.classList.add((row + col) % 2 === 0 ? 'white' : 'black');
+            cell.dataset.row = row;
+            cell.dataset.col = col;
 
-        if (move === null) return 'snapback';
+            const piece = board[row][col];
+            if (piece) {
+                const pieceElement = document.createElement('span');
+                pieceElement.classList.add('piece');
+                pieceElement.textContent = pieceUnicode[piece];
+                pieceElement.draggable = true;
+                pieceElement.dataset.piece = piece;
 
-        updateStatus();
-        updateMoveHistory();
-    }
-
-    function onSnapEnd() {
-        myBoard.position(game.fen());
-    }
-
-    function updateStatus() {
-        var status = '';
-        var moveColor = 'White';
-        
-        if (game.turn() === 'b') {
-            moveColor = 'Black';
-        }
-
-        if (game.in_checkmate()) {
-            status = 'Game over - ' + moveColor + ' is in checkmate!';
-        } else if (game.in_draw()) {
-            status = 'Game over - Draw!';
-        } else {
-            status = moveColor + ' to move';
-            if (game.in_check()) {
-                status += ' (in check)';
-            }
-        }
-
-        $status.html(status);
-        $fen.html(game.fen());
-        $pgn.html(game.pgn());
-    }
-
-    function updateMoveHistory() {
-        var history = game.history();
-        var historyHtml = '';
-        
-        if (history.length === 0) {
-            historyHtml = '<div style="text-align: center; color: #888; padding: 20px;">No moves yet</div>';
-        } else {
-            for (var i = 0; i < history.length; i += 2) {
-                var moveNumber = Math.floor(i / 2) + 1;
-                var whiteMove = history[i];
-                var blackMove = history[i + 1] || '';
-                
-                historyHtml += '<div class="move-pair">';
-                historyHtml += '<div class="move-number">' + moveNumber + '.</div>';
-                historyHtml += '<div class="move" onclick="jumpToMove(' + i + ')">' + whiteMove + '</div>';
-                if (blackMove) {
-                    historyHtml += '<div class="move" onclick="jumpToMove(' + (i + 1) + ')">' + blackMove + '</div>';
+                if (piece === piece.toLowerCase() && piece !== piece.toUpperCase()) { 
+                    pieceElement.classList.add('black-piece-text');
                 }
-                historyHtml += '</div>';
+
+                cell.appendChild(pieceElement);
             }
+            cell.addEventListener('click', handleCellClick);
+            boardElement.appendChild(cell);
         }
-        
-        $('#moveHistory').html(historyHtml);
     }
+    updateTurnIndicator();
+}
 
-    window.jumpToMove = function(moveIndex) {
-        // This would require more complex implementation to jump to specific moves
-        // For now, we'll just highlight the selected move
-        $('.move').removeClass('selected');
-        $('.move').eq(moveIndex).addClass('selected');
-    };
+function handleCellClick(event) {
+    if (gameOver) return; 
 
-    myBoard = Chessboard('myBoard', {
-        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-        draggable: true,
-        position: 'start',
-        onDragStart: onDragStart,
-        onDrop: onDrop,
-        onSnapEnd: onSnapEnd
-    });
+    const clickedCell = event.currentTarget;
+    const row = parseInt(clickedCell.dataset.row);
+    const col = parseInt(clickedCell.dataset.col);
+    const pieceElement = clickedCell.querySelector('.piece');
 
-    updateStatus();
-    updateMoveHistory();
+    if (selectedPiece) {
+        // Move piece
+        const prevRow = parseInt(selectedPiece.dataset.row); 
+        const prevCol = parseInt(selectedPiece.dataset.col); 
 
-    // Global functions
-    window.undoMove = function() {
-        if (game.history().length > 0) {
-            game.undo();
-            myBoard.position(game.fen());
-            updateStatus();
-            updateMoveHistory();
+        const pieceToMove = board[prevRow][prevCol];
+        const capturedPiece = board[row][col]; 
+
+        // Update board array
+        board[row][col] = pieceToMove;
+        board[prevRow][prevCol] = '';
+
+        // Move piece element in DOM
+        // Remove existing piece at destination if any
+        const existingPieceInTargetCell = clickedCell.querySelector('.piece');
+        if (existingPieceInTargetCell) {
+            clickedCell.removeChild(existingPieceInTargetCell);
         }
-    };
+        clickedCell.appendChild(selectedPiece.element);
+        selectedPiece.element.dataset.row = row;
+        selectedPiece.element.dataset.col = col;
 
-    window.newGame = function() {
-        game.reset();
-        myBoard.start();
-        updateStatus();
-        updateMoveHistory();
-    };
 
-    window.showResignModal = function() {
-        $('#resignModal').show();
-    };
+        selectedPiece = null;
+        // Remove selection highlight from all cells
+        document.querySelectorAll('.cell.selected').forEach(cell => cell.classList.remove('selected'));
 
-    window.hideResignModal = function() {
-        $('#resignModal').hide();
-    };
-
-    window.confirmResign = function() {
-        $('#status').html('Game over - You resigned!');
-        $('#resignModal').hide();
-        // Could add more resignation logic here
-    };
-
-    window.showShareModal = function() {
-        var pgn = game.pgn();
-        var fen = game.fen();
-        var shareText = 'Chess Game\n\nPGN: ' + pgn + '\n\nFEN: ' + fen;
-        $('#shareText').val(shareText);
-        $('#shareModal').show();
-    };
-
-    window.hideShareModal = function() {
-        $('#shareModal').hide();
-    };
-
-    window.copyToClipboard = function() {
-        var shareText = document.getElementById('shareText');
-        shareText.select();
-        shareText.setSelectionRange(0, 99999);
-        
-        try {
-            document.execCommand('copy');
-            alert('Game notation copied to clipboard!');
-        } catch (err) {
-            alert('Unable to copy. Please select and copy manually.');
+        // Check for win condition
+        if (capturedPiece === 'k') {
+            turnIndicator.textContent = "White Wins!";
+            gameOver = true;
+            turnIndicator.className = 'white-wins';
+            return;
+        } else if (capturedPiece === 'K') {
+            turnIndicator.textContent = "Black Wins!";
+            gameOver = true;
+            turnIndicator.className = 'black-wins'; 
+            return;
         }
-        
-        hideShareModal();
-    };
 
-    // Close modals when clicking outside
-    $('.modal').click(function(e) {
-        if (e.target === this) {
-            $(this).hide();
+        isWhiteTurn = !isWhiteTurn;
+        updateTurnIndicator();
+
+
+    } else if (pieceElement) {
+        // Select piece
+        const pieceType = pieceElement.dataset.piece;
+        const isWhitePiece = pieceType === pieceType.toUpperCase();
+
+        if ((isWhiteTurn && isWhitePiece) || (!isWhiteTurn && !isWhitePiece)) {
+            selectedPiece = {
+                element: pieceElement,
+                piece: pieceType,
+                dataset: {
+                    row: parseInt(clickedCell.dataset.row),
+                    col: parseInt(clickedCell.dataset.col)
+                }
+            };
+            // Highlight selected cell
+            document.querySelectorAll('.cell.selected').forEach(cell => cell.classList.remove('selected'));
+            clickedCell.classList.add('selected');
         }
-    });
-});
+    }
+}
+
+function updateTurnIndicator() {
+    if (gameOver) return; 
+    turnIndicator.textContent = isWhiteTurn ? "White's Turn" : "Black's Turn";
+    turnIndicator.className = isWhiteTurn ? 'white-turn' : 'black-turn';
+}
+
+function resetGame() {
+    selectedPiece = null;
+    isWhiteTurn = true;
+    gameOver = false; 
+    createBoard();
+}
+
+resetButton.addEventListener('click', resetGame);
+
+// Initial setup
+createBoard();

@@ -2,114 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Papan Catur</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PathQuest Chess Game</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.js"></script>
-
 </head>
 <body>
-    <div class="game-container">
-        <div class="board-section">
-            <div class="players-info">
-                <div class="player">
-                    <div class="player-avatar">🤖</div>
-                    <div>
-                        <div class="player-name">The Demolition Man</div>
-                        <div class="player-rating">(9999) 🇺🇸</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="myBoard" style="width: 500px"></div>
-            
-            <div class="players-info">
-                <div class="player">
-                    <div class="player-avatar">👤</div>
-                    <div>
-                        <div class="player-name">rifqimaruf</div>
-                        <div class="player-rating">(1799) 🇮🇩</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-title">Game Status</div>
-                <div class="status-section">
-                    <div class="game-status" id="status">White to move</div>
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">Move History</div>
-                <div class="move-history" id="moveHistory">
-                    <div style="text-align: center; color: #888; padding: 20px;">
-                        Game hasn't started yet
-                    </div>
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">Game Controls</div>
-                <div class="game-controls">
-                    <button class="control-btn btn-back" id="backBtn" onclick="undoMove()">
-                        ⬅️ Take Back
-                    </button>
-                    <button class="control-btn btn-resign" id="resignBtn" onclick="showResignModal()">
-                        🏳️ Resign
-                    </button>
-                    <button class="control-btn btn-share" onclick="showShareModal()">
-                        📋 Share Game
-                    </button>
-                    <button class="control-btn btn-new-game" onclick="newGame()">
-                        🆕 New Game
-                    </button>
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">Current Position (FEN)</div>
-                <div class="notation-display" id="fen"></div>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">Game Notation (PGN)</div>
-                <div class="notation-display" id="pgn"></div>
-            </div>
-        </div>
+    <h1>Chess Game</h1>
+    <div id="game-info">White's Turn</div>
+    <div id="board-container" class="board-container">
+        <div id="highlight-overlay"></div>
+    </div>
+    <div id="game-controls">
+        <button id="reset-button" class="game-button">Reset Game</button>
     </div>
 
-    <!-- Resign Confirmation Modal -->
-    <div id="resignModal" class="modal">
+    <div id="message-modal" class="modal">
         <div class="modal-content">
-            <h3>Confirm Resignation</h3>
-            <p>Are you sure you want to resign this game?</p>
-            <div class="modal-buttons">
-                <button class="modal-btn btn-confirm" onclick="confirmResign()">Yes, Resign</button>
-                <button class="modal-btn btn-cancel" onclick="hideResignModal()">Cancel</button>
+            <h2 id="modal-title" class="modal-title">Game Message</h2>
+            <p id="modal-text" class="text-lg"></p>
+            <div id="modal-buttons-container">
+                <button id="modal-ok-button" class="modal-button">OK</button>
+                <button id="modal-confirm-button" class="modal-button">Confirm</button>
+                <button id="modal-cancel-button" class="modal-button">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Share Game Modal -->
-    <div id="shareModal" class="modal share-modal">
-        <div class="modal-content">
-            <h3>Share Game</h3>
-            <p>Copy the game notation below:</p>
-            <textarea id="shareText" readonly></textarea>
-            <div class="modal-buttons">
-                <button class="modal-btn btn-confirm" onclick="copyToClipboard()">Copy to Clipboard</button>
-                <button class="modal-btn btn-cancel" onclick="hideShareModal()">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="index.js" defer></script>
-    
+    <script type="module" src="script.js"></script>
+    <!-- <script src="./chess-engine.js"></script> -->
 </body>
 </html>
