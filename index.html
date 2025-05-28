@@ -2,17 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PathQuest Chess Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Chess Game</h1>
-        <div id="turnIndicator">White's Turn</div>
-        <div class="board" id="chessBoard"></div>
-        <button id="resetButton">Reset Game</button>
+    <h1>Chess Game</h1>
+    <div id="game-info">White's Turn</div>
+    <div id="board-container" class="board-container">
+        <div id="highlight-overlay"></div>
     </div>
-    <script src="index.js"></script>
+    <div id="game-controls">
+        <button id="reset-button" class="game-button">Reset Game</button>
+    </div>
+
+    <div id="message-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title" class="modal-title">Game Message</h2>
+            <p id="modal-text" class="text-lg"></p>
+            <div id="modal-buttons-container">
+                <button id="modal-ok-button" class="modal-button">OK</button>
+                <button id="modal-confirm-button" class="modal-button">Confirm</button>
+                <button id="modal-cancel-button" class="modal-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <!-- <script src="./chess-engine.js"></script> -->
 </body>
 </html>
