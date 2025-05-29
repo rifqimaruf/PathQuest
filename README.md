@@ -9,4 +9,4 @@ Notes :
 
 Overview :
 
-![Screenshot of chess game](assets/chess-game-screenshot.png)
+![Screenshot of chess game](./assets//ss.png)
