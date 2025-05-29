@@ -1,6 +1,7 @@
-import { initGame, handleSquareClick, movePiece, makeBlackMove, switchPlayer, checkGameEndConditions, board, currentPlayer, isGameActive, moveHistory, currentMoveIndex } from './game.js';
-import { renderBoard, highlightPossibleMoves, clearHighlights, updateMoveList, navigateToMove } from './board.js';
-import { setupUI, showInfoModal, showConfirmModal, gameInfo } from './ui.js';
+import { initGame, handleSquareClick, movePiece, makeBlackMove, switchPlayer, checkGameEndConditions, board, currentPlayer, isGameActive, moveHistory, currentMoveIndex } from './src/core/game.js';
+import { renderBoard, highlightPossibleMoves, clearHighlights, updateMoveList, navigateToMove } from './src/ui/boardUI.js';
+import { setupUI, showInfoModal, showConfirmModal, gameInfo } from './src/ui/ui.js';
+import './src/core/move-generator.js'; 
 
 function initialize() {
     setupUI({

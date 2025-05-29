@@ -45,7 +45,7 @@ function renderBoard(board, handleSquareClick) {
             const piece = board[r][c];
             if (piece) {
                 const img = document.createElement('img');
-                img.src = `./assets/${PIECE_IMAGES[piece.color][piece.type]}`;
+                img.src = `./assets/images/${PIECE_IMAGES[piece.color][piece.type]}`;
                 img.alt = `${piece.color} ${piece.type}`;
                 img.classList.add('piece-image');
                 square.appendChild(img);

@@ -56,7 +56,6 @@ h1 {
 
 .selected-piece-square { 
     background-color: #60A5FA !important; 
-    outline: 3px solid #2563EB; 
 }
 
 .highlight-from {
