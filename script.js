@@ -11,9 +11,23 @@ import { ChessEngine } from './chess-engine.js';
 let highlightOverlay;
 let lastMove = null;
 
-const UNICODE_PIECES = {
-    white: { king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙' },
-    black: { king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟' }
+const PIECE_IMAGES = {
+    white: {
+        king: 'wK.png',
+        queen: 'wQ.png',
+        rook: 'wR.png',
+        bishop: 'wB.png',
+        knight: 'wN.png',
+        pawn: 'wP.png'
+    },
+    black: {
+        king: 'bK.png',
+        queen: 'bQ.png',
+        rook: 'bR.png',
+        bishop: 'bB.png',
+        knight: 'bN.png',
+        pawn: 'bP.png'
+    }
 };
 
 let board = [];
@@ -48,7 +62,11 @@ function renderBoard() {
 
             const piece = board[r][c];
             if (piece) {
-                square.textContent = UNICODE_PIECES[piece.color][piece.type];
+                const img = document.createElement('img');
+                img.src = `./assets/${PIECE_IMAGES[piece.color][piece.type]}`;
+                img.alt = `${piece.color} ${piece.type}`;
+                img.classList.add('piece-image');
+                square.appendChild(img);
                 square.classList.add(piece.color === 'white' ? 'piece-white' : 'piece-black');
             }
             square.addEventListener('click', () => handleSquareClick(r, c));
