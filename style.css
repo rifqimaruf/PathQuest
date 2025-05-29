@@ -19,17 +19,20 @@ h1 {
     color: #fff;
 }
 
+#game-container {
+    display: flex;
+    margin-top:10px;
+    flex-direction: row;
+    gap: 1rem;
+}
+
 .board-container {
     display: grid;
     grid-template-columns: repeat(8, minmax(0, 1fr));
     grid-template-rows: repeat(8, minmax(0, 1fr));
-    /* grid-template-columns:  repeat(8, minmax(40px, calc(min(8vh, 8vw))));
-    grid-template-rows: repeat(8, minmax(40px, calc(min(8vh, 8vw)))); */
     width: clamp(200px, 80vw, 600px); 
     height: clamp(200px, 80vw, 600px); 
     border: 3px solid #666; 
-    /*border-radius: 0.5rem; /* rounded-lg */
-    /* box-shadow: 0 0 15px rgba(0,0,0,0.5);  */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     position: relative; 
 }
@@ -38,46 +41,135 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(1.5rem, 5vw, 3rem); 
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
     box-sizing: border-box; 
 }
 
-.light-square { background-color: #f0d9b5; }
+.light-square { 
+    background-color: #f0d9b5; 
+}
 
-.dark-square { background-color: #b58863; }
+.dark-square { 
+    background-color: #b58863; 
+}
 
 .selected-piece-square { 
     background-color: #60A5FA !important; 
     outline: 3px solid #2563EB; 
 }
 
+.highlight-from {
+    background-color: rgba(0, 255, 0, 0.3) !important;
+}
+
+.highlight-to {
+    background-color: rgba(255, 255, 0, 0.3) !important;
+}
+
 #highlight-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 1; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    pointer-events: none; 
+    z-index: 1; 
 }
 
 .highlight-segment {
-    position: absolute; border-radius: 0.125rem; 
+    position: absolute; 
+    border-radius: 0.125rem; 
 }
 
-.highlight-move { background-color: rgba(74, 222, 128, 0.55); }
+.highlight-move { 
+    background-color: rgba(74, 222, 128, 0.55); 
+}
 
-.highlight-capture { background-color: rgba(248, 113, 113, 0.55); }
+.highlight-capture { 
+    background-color: rgba(248, 113, 113, 0.55); 
+}
 
-.piece-white { color: #FFFFFF; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);  }
-.piece-black { color: #000000; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-.dark-square .piece-white { color: #FFFFFF; }
-.dark-square .piece-black { color: #000000; }
-.light-square .piece-black { color: #000000; }
-.light-square .piece-white { color: #FFFFFF; }
+.piece-white, .piece-black { 
+    cursor: pointer; 
+}
 
-#game-controls {
+.piece-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+#side-panel {
+    width: 200px;
+    background-color: #444;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     display: flex;
-    gap: 0.5rem; 
-    margin-top: 1rem; 
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#move-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.nav-button {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: bold;
+    font-size: 1rem;
+    width: 2.5rem;
+    text-align: center;
+}
+
+.nav-button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+.nav-button:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+#move-list {
+    max-height: 400px;
+    overflow-y: auto;
+    color: #f3f4f6;
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.move-row {
+    display: flex;
     align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.move-number {
+    width: 2rem;
+    text-align: right;
+    margin-right: 0.5rem;
+}
+
+.move-item {
+    flex: 1;
+    padding: 0.25rem;
+    cursor: pointer;
+}
+
+.current-move {
+    background-color: #60A5FA;
+    border-radius: 0.25rem;
 }
 
 .game-button {
@@ -87,26 +179,48 @@ h1 {
     border-radius: 0.375rem; 
     cursor: pointer;
     transition: background-color 0.2s;
-    margin-bottom: 10px;
+    background-color: #4CAF50;
+    width: 100%;
+    margin-top: 0.5rem;
 }
 
-#reset-button { background-color: #4CAF50;}
-#reset-button:hover { background-color: #4CAF50; }
-
+.game-button:hover {
+    background-color: #45a049;
+}
 
 #game-info {
-    margin-top: 1.5rem; margin-bottom: 0.5rem;font-size: 1.25rem; text-align: center; color: #f3f4f6;
+    margin-top: 1.5rem; 
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem; 
+    text-align: center; 
+    color: #f3f4f6;
 }
 
 .modal {
-    display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-    overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;
+    display: none; 
+    position: fixed; 
+    z-index: 100; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%;
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.6); 
+    align-items: center; 
+    justify-content: center;
 }
 
 .modal-content {
-    background-color: #4b5563; margin: auto; padding: 2rem; border: 1px solid #6b7280;
-    width: 80%; max-width: 500px; border-radius: 0.5rem; text-align: center;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); color: #f3f4f6;
+    background-color: #4b5563; 
+    margin: auto; 
+    padding: 2rem; 
+    border: 1px solid #6b7280;
+    width: 80%; 
+    max-width: 500px; 
+    border-radius: 0.5rem; 
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); 
+    color: #f3f4f6;
 }
 
 .modal-title {
@@ -135,18 +249,24 @@ h1 {
     color: white;
 }
 
-#modal-ok-button:hover { background-color: #2563eb; }
+#modal-ok-button:hover { 
+    background-color: #2563eb; 
+}
 
 #modal-confirm-button {
     background-color: #22c55e; 
     color: white;
 }
 
-#modal-confirm-button:hover { background-color: #16a34a; }
+#modal-confirm-button:hover { 
+    background-color: #16a34a; 
+}
 
 #modal-cancel-button { 
     background-color: #6b7280; 
     color: white;
 }
 
-#modal-cancel-button:hover { background-color: #4b5563; }
+#modal-cancel-button:hover { 
+    background-color: #4b5563; 
+}

@@ -1,6 +1,6 @@
 export class ChessEngine {
     constructor() {
-        this.maxTime = 1000; 
+        this.maxTime = 1000;
         this.pieceValues = {
             pawn: 100,
             knight: 320,
@@ -111,7 +111,7 @@ export class ChessEngine {
     }
 
     getBestMove(board, color) {
-        this.lastMove = window.lastMove; // Sync with global lastMove
+        this.lastMove = window.lastMove;
         const startTime = performance.now();
         let depth = 1;
         let bestMove = null;
@@ -143,7 +143,7 @@ export class ChessEngine {
             }
 
             depth++;
-            if (depth > 10) break; // Prevent excessive depth
+            if (depth > 10) break;
         }
 
         return bestMove;
@@ -262,7 +262,7 @@ export class ChessEngine {
         }
         const tempBoard = this.makeMove(board, move);
         if (this.isKingInCheck(move.piece.color === 'white' ? 'black' : 'white', tempBoard)) {
-            score += 50; // Bonus for checks
+            score += 50;
         }
         return score;
     }
@@ -354,7 +354,7 @@ export class ChessEngine {
         if (piece.type === 'pawn' && enPassant) {
             newBoard[toR][toC] = piece;
             newBoard[fromR][fromC] = null;
-            newBoard[fromR][toC] = null; // Remove captured pawn
+            newBoard[fromR][toC] = null;
         } else if (piece.type === 'pawn' && ((piece.color === 'white' && toR === 0) || (piece.color === 'black' && toR === 7))) {
             newBoard[toR][toC] = { type: 'queen', color: piece.color };
             newBoard[fromR][fromC] = null;
@@ -554,4 +554,3 @@ export class ChessEngine {
         return files[c] + ranks[r];
     }
 }
-

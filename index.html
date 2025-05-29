@@ -8,13 +8,22 @@
 </head>
 <body>
     <h1>Chess Game</h1>
+    <div id="game-container">
+        <div id="board-container" class="board-container">
+            <div id="highlight-overlay"></div>
+        </div>
+        <div id="side-panel">
+            <div id="move-navigation">
+                <button id="first-move" class="nav-button">|<<</button>
+                <button id="prev-move" class="nav-button"><<</button>
+                <button id="next-move" class="nav-button">>></button>
+                <button id="last-move" class="nav-button">>>|</button>
+            </div>
+            <div id="move-list"></div>
+            <button id="reset-button" class="game-button">Reset Game</button>
+        </div>
+    </div>
     <div id="game-info">White's Turn</div>
-    <div id="board-container" class="board-container">
-        <div id="highlight-overlay"></div>
-    </div>
-    <div id="game-controls">
-        <button id="reset-button" class="game-button">Reset Game</button>
-    </div>
 
     <div id="message-modal" class="modal">
         <div class="modal-content">
@@ -29,6 +38,5 @@
     </div>
 
     <script type="module" src="script.js"></script>
-    <!-- <script src="./chess-engine.js"></script> -->
 </body>
 </html>
